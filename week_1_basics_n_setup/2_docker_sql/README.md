@@ -26,9 +26,17 @@ docker run -it \
   -e POSTGRES_USER="root" \
   -e POSTGRES_PASSWORD="root" \
   -e POSTGRES_DB="ny_taxi" \
-  -v c:/Users/alexe/git/data-engineering-zoomcamp/week_1_basics_n_setup/2_docker_sql/ny_taxi_postgres_data:/var/lib/postgresql/data \
+  -v c:/home/ollie/data_camp/data-engineering-zoomcamp/week_1_basics_n_setup/2_docker_sql/ny_taxi_postgres_data:/var/lib/postgresql/data \
   -p 5432:5432 \
   postgres:13
+
+docker run -it \
+   -e POSTGRES_USER="root" \
+   -e POSTGRES_PASSWORD="root" \
+   -e POSTGRES_DB="ny_taxi" \
+   -v $(pwd)/ny_taxi_postgres_data:/var/lib/postgresql/data \
+   -p 5432:5432 \
+   postgres:13
 ```
 
 If you have the following error:
@@ -55,7 +63,7 @@ Change the mounting path. Replace it with the following:
 #### Linux and MacOS
 
 
-```bash
+```bash works
 docker run -it \
   -e POSTGRES_USER="root" \
   -e POSTGRES_PASSWORD="root" \
@@ -140,7 +148,7 @@ docker run -it \
   -e POSTGRES_USER="root" \
   -e POSTGRES_PASSWORD="root" \
   -e POSTGRES_DB="ny_taxi" \
-  -v c:/Users/alexe/git/data-engineering-zoomcamp/week_1_basics_n_setup/2_docker_sql/ny_taxi_postgres_data:/var/lib/postgresql/data \
+  -v $(pwd)/ny_taxi_postgres_data:/var/lib/postgresql/data \
   -p 5432:5432 \
   --network=pg-network \
   --name pg-database \
@@ -165,15 +173,15 @@ docker run -it \
 Running locally
 
 ```bash
-URL="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
+URL="https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2022-01.parquet"
 
-python ingest_data.py \
+python3 upload_data.py \
   --user=root \
   --password=root \
   --host=localhost \
   --port=5432 \
   --db=ny_taxi \
-  --table_name=yellow_taxi_trips \
+  --table_name=yellow_taxi_data \
   --url=${URL}
 ```
 
@@ -205,15 +213,16 @@ Run the script with Docker
 URL="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
 
 docker run -it \
-  --network=pg-network \
+  --network=2_docker_sql_default \
   taxi_ingest:v001 \
     --user=root \
     --password=root \
-    --host=pg-database \
+    --host=pgdatabase \
     --port=5432 \
     --db=ny_taxi \
-    --table_name=yellow_taxi_trips \
+    --table_name=yellow_taxi_data \
     --url=${URL}
+
 ```
 
 ### Docker-Compose 
