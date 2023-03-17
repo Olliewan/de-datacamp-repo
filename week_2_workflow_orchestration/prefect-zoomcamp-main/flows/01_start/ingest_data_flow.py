@@ -19,16 +19,10 @@ def extract_data(url: str):
         csv_name = 'yellow_tripdata_2021-01.csv.gz'
     else:
         csv_name = 'output.csv'
-    
     os.system(f"wget {url} -O {csv_name}")
-
-    df_iter = pd.read_csv(csv_name, iterator=True, chunksize=100000)
-
-    df = next(df_iter)
-
+    df = pd.read_csv(csv_name)
     df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
     df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
-
     return df
 
 @task(log_prints=True)
@@ -40,7 +34,7 @@ def transform_data(df):
 
 @task(log_prints=True, retries=3)
 def load_data(table_name, df):
-    
+
     connection_block = SqlAlchemyConnector.load("postgres-connector")
     with connection_block.get_connection(begin=False) as engine:
         df.head(n=0).to_sql(name=table_name, con=engine, if_exists='replace')
